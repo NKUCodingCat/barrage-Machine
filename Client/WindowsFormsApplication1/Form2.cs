@@ -15,6 +15,7 @@ namespace WindowsFormsApplication1
         public String FontNow = "";
         public int SizeNow = 0;
         public int SpeedNow = 0;
+        public String Url = "";
         public Form2()
         {
             InitializeComponent();
@@ -40,11 +41,12 @@ namespace WindowsFormsApplication1
             object[] Arr3 = new object[9];
             for (int i = 0; i < Arr3.Length; i++)
             {
-                Arr3[i] = i+1;
+                Arr3[i] = i + 1;
             }
             this.comboBox3.Items.AddRange(Arr3);
             this.comboBox3.SelectedIndex = 4;
             this.SpeedNow = int.Parse(this.comboBox3.Text.ToString());
+            this.Url = textBox1.Text;
         }
         private void Form2_Load(object sender, EventArgs e)
         {
@@ -82,8 +84,33 @@ namespace WindowsFormsApplication1
             FontNow = this.comboBox1.Text.ToString();
             SizeNow = int.Parse(this.comboBox2.Text.ToString());
             SpeedNow = int.Parse(this.comboBox3.Text.ToString());
-            LogOut("Change Font, Size and Speed to (" + FontNow + ", " + SizeNow.ToString() +", "+SpeedNow.ToString() +")");
+            LogOut("Change Font, Size and Speed to (" + FontNow + ", " + SizeNow.ToString() + ", " + SpeedNow.ToString() + ")");
             if (ChangeFS != null) ChangeFS(this, new EventArgs());
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+            if (!textBox1.Text.Equals(Url))
+            {
+                try
+                {
+                    System.Net.WebRequest wReq = System.Net.WebRequest.Create("http://"+textBox1.Text);
+                    wReq.Timeout = 5000;
+                    System.Net.WebResponse wResp = wReq.GetResponse();
+                    System.IO.Stream respStream = wResp.GetResponseStream();
+                    LogOut("连接成功，服务器地址已经改为"+textBox1.Text);
+                    Url = textBox1.Text;
+                }
+                catch (System.Exception ex)
+                {
+                    LogOut("连接不成功，请重新输入");
+                    textBox1.Text = Url;
+                }
+            }
+            else return;
+
+
         }
     }
 }

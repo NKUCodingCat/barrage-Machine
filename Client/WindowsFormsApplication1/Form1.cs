@@ -72,6 +72,7 @@ namespace WindowsFormsApplication1
             catch (System.Exception ex)
             {
                 F2.LogOut("网络异常"+ex.ToString());
+                F2.LogOut(Url);
                 return "";
             }
         }
@@ -84,12 +85,14 @@ namespace WindowsFormsApplication1
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                F2.LogOut("服务器返回数据不符合所需JSON标准，请检查");
+                //throw new Exception(ex.Message);
+                return new Dictionary<string, object> ();
             }
         }
         public static ArrayList Content_Make()
         {
-            String JsonText = GetUrltoHtml("http://302.nktwclick.sinaapp.com/tojson", "utf-8");
+            String JsonText = GetUrltoHtml("http://"+F2.Url, "utf-8");
             Dictionary<string, object> dic = JsonToDictionary(JsonText);
             ArrayList Content = new ArrayList();
             foreach (KeyValuePair<string, object> item in dic)
