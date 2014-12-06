@@ -22,8 +22,6 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        
-        
         public Form1()
         {
             InitializeComponent();
@@ -53,6 +51,8 @@ namespace WindowsFormsApplication1
         public static bool isChanged = false;
         public static int Scr_len = 0;
         static Form2 F2 = new Form2();
+        public String FontNow = F2.FontNow;
+        public int SizeNow = F2.SizeNow;
         public static string GetUrltoHtml(string Url, string type)
         {
             try
@@ -125,7 +125,7 @@ namespace WindowsFormsApplication1
                 {
                     Label Temp = new Label();
                     Temp.AutoSize = true;
-                    Temp.Font = new System.Drawing.Font("黑体", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                    Temp.Font = new System.Drawing.Font(F2.FontNow, (float)F2.SizeNow, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
                     Temp.Location = new System.Drawing.Point(ScreenArea.Width + (int)((con.Time-Time_min)*10), 35);
                     Temp.Name = "label1";
                     Temp.ForeColor = Color.FromArgb(255, 255, 255);
@@ -173,14 +173,18 @@ namespace WindowsFormsApplication1
                 }
                 else
                 {
-                    i.Location = new System.Drawing.Point(i.Location.X - 5, i.Location.Y);
+                    i.Location = new System.Drawing.Point(i.Location.X - F2.SpeedNow, i.Location.Y);
                 }
             }
         }
         void Form1_FormClosed(object sender, EventArgs e)
         {
             Application.Exit();
-        }  
+        }
+        void ChangeFontAndSize(object sender, EventArgs e)
+        {
+
+        }
         public delegate void AddControlEventHandler(Control c);
         public AddControlEventHandler AddControl;
         public delegate void RemoveControlEventHandler(Control c);
@@ -215,6 +219,7 @@ namespace WindowsFormsApplication1
             ScreenArea = System.Windows.Forms.Screen.GetWorkingArea(this);
             F2.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+            F2.ChangeFS += new EventHandler(ChangeFontAndSize);
         }
     }
 }
