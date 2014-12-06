@@ -78,39 +78,44 @@ namespace WindowsFormsApplication1
         {
             Log.Text = Log.Text.Insert(Log.Text.Length, "[" + (++Count).ToString() + "]  " + TimeMark() + " ====> " + L + "\n");
         }
-        public event EventHandler ChangeFS;
+        
         public void button2_Click(object sender, EventArgs e)
         {
             FontNow = this.comboBox1.Text.ToString();
             SizeNow = int.Parse(this.comboBox2.Text.ToString());
             SpeedNow = int.Parse(this.comboBox3.Text.ToString());
             LogOut("Change Font, Size and Speed to (" + FontNow + ", " + SizeNow.ToString() + ", " + SpeedNow.ToString() + ")");
-            if (ChangeFS != null) ChangeFS(this, new EventArgs());
+           
         }
-
+        public event EventHandler StopRef;
+        public event EventHandler StaRef;
         private void button3_Click(object sender, EventArgs e)
         {
-
+            
             if (!textBox1.Text.Equals(Url))
             {
+                MessageBox.Show("这个功能不稳定，暂停使用");
+                textBox1.Text = Url;
+                return;
+                if (StopRef != null) StopRef(this, new EventArgs());
                 try
                 {
-                    System.Net.WebRequest wReq = System.Net.WebRequest.Create("http://"+textBox1.Text);
+                    System.Net.WebRequest wReq = System.Net.WebRequest.Create("http://" + textBox1.Text);
                     wReq.Timeout = 5000;
                     System.Net.WebResponse wResp = wReq.GetResponse();
                     System.IO.Stream respStream = wResp.GetResponseStream();
-                    LogOut("连接成功，服务器地址已经改为"+textBox1.Text);
+                    LogOut("连接成功，服务器地址已经改为" + textBox1.Text);
                     Url = textBox1.Text;
+                    if (StaRef != null) StaRef(this, new EventArgs());
                 }
                 catch (System.Exception ex)
                 {
                     LogOut("连接不成功，请重新输入");
                     textBox1.Text = Url;
+                    if (StaRef != null) StaRef(this, new EventArgs());
                 }
             }
             else return;
-
-
         }
     }
 }

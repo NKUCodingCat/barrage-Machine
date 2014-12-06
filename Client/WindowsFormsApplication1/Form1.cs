@@ -44,7 +44,7 @@ namespace WindowsFormsApplication1
         const int WS_EX_LAYERED = 0x80000;
         const int LWA_ALPHA = 2;
         System.Timers.Timer Timers_Timer = new System.Timers.Timer();
-        System.Timers.Timer Timers_Timer2 = new System.Timers.Timer();
+        public System.Timers.Timer Timers_Timer2 = new System.Timers.Timer();
         ArrayList Screen = new ArrayList();
         Rectangle ScreenArea = new Rectangle();
         double Time_Max = double.MinValue;
@@ -58,15 +58,17 @@ namespace WindowsFormsApplication1
             try
             {
                 System.Net.WebRequest wReq = System.Net.WebRequest.Create(Url);
-                wReq.Timeout = 5000;
-                // Get the response instance.
+                wReq.Timeout = 10000;
                 System.Net.WebResponse wResp = wReq.GetResponse();
                 System.IO.Stream respStream = wResp.GetResponseStream();
                 // Dim reader As StreamReader = New StreamReader(respStream)
+                
                 using (System.IO.StreamReader reader = new System.IO.StreamReader(respStream, Encoding.GetEncoding(type)))
                 {
-                   
-                    return reader.ReadToEnd();
+                    
+                    String st2 =  reader.ReadToEnd();
+                    wReq.Abort();
+                    return st2;
                 }
             }
             catch (System.Exception ex)
@@ -184,15 +186,18 @@ namespace WindowsFormsApplication1
         {
             Application.Exit();
         }
-        void ChangeFontAndSize(object sender, EventArgs e)
+        void StopRef(object sender, EventArgs e)
         {
-
+            Timers_Timer2.Enabled = false;
+        }
+        void StaRef(object sender, EventArgs e)
+        {
+            Timers_Timer2.Enabled = true;
         }
         public delegate void AddControlEventHandler(Control c);
         public AddControlEventHandler AddControl;
         public delegate void RemoveControlEventHandler(Control c);
         public RemoveControlEventHandler RemoveControl;
-
         private void Form1_Load(object sender, EventArgs e)
         {
             F2.Show();
@@ -222,7 +227,8 @@ namespace WindowsFormsApplication1
             ScreenArea = System.Windows.Forms.Screen.GetWorkingArea(this);
             F2.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
-            F2.ChangeFS += new EventHandler(ChangeFontAndSize);
+            F2.StopRef+= new EventHandler(StopRef);
+            F2.StaRef += new EventHandler(StaRef);
         }
     }
 }
