@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using System.Threading;
 namespace WindowsFormsApplication1
 {
     public partial class Form2 : Form
@@ -78,42 +78,51 @@ namespace WindowsFormsApplication1
         {
             Log.Text = Log.Text.Insert(Log.Text.Length, "[" + (++Count).ToString() + "]  " + TimeMark() + " ====> " + L + "\n");
         }
-        
+
         public void button2_Click(object sender, EventArgs e)
         {
             FontNow = this.comboBox1.Text.ToString();
             SizeNow = int.Parse(this.comboBox2.Text.ToString());
             SpeedNow = int.Parse(this.comboBox3.Text.ToString());
             LogOut("Change Font, Size and Speed to (" + FontNow + ", " + SizeNow.ToString() + ", " + SpeedNow.ToString() + ")");
-           
+
         }
         public event EventHandler StopRef;
         public event EventHandler StaRef;
         private void button3_Click(object sender, EventArgs e)
         {
-            
+
             if (!textBox1.Text.Equals(Url))
             {
-                MessageBox.Show("这个功能不稳定，暂停使用");
-                textBox1.Text = Url;
-                return;
+                //MessageBox.Show("这个功能不稳定，暂停使用");
+                //textBox1.Text = Url;
+                //return;
+                LogOut("Wait 5 Sec");
                 if (StopRef != null) StopRef(this, new EventArgs());
+                for (int i = 0; i < 50; i++)
+                {
+                    Thread.Sleep(100);
+                }
+                System.Net.WebRequest wReq;
+                System.Net.WebResponse wResp;
+                System.IO.Stream respStream;
                 try
                 {
-                    System.Net.WebRequest wReq = System.Net.WebRequest.Create("http://" + textBox1.Text);
+                    wReq = System.Net.WebRequest.Create("http://" + textBox1.Text);
                     wReq.Timeout = 5000;
-                    System.Net.WebResponse wResp = wReq.GetResponse();
-                    System.IO.Stream respStream = wResp.GetResponseStream();
-                    LogOut("连接成功，服务器地址已经改为" + textBox1.Text);
-                    Url = textBox1.Text;
-                    if (StaRef != null) StaRef(this, new EventArgs());
+                    wResp = wReq.GetResponse();
+                    respStream = wResp.GetResponseStream();
                 }
                 catch (System.Exception ex)
                 {
+                    LogOut(ex.ToString());
                     LogOut("连接不成功，请重新输入");
                     textBox1.Text = Url;
                     if (StaRef != null) StaRef(this, new EventArgs());
                 }
+                LogOut("连接成功，服务器地址已经改为" + textBox1.Text);
+                Url = textBox1.Text;
+                if (StaRef != null) StaRef(this, new EventArgs());
             }
             else return;
         }

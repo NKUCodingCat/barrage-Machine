@@ -11,11 +11,13 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.IO;
 using System.Web.Script.Serialization;
+using System.Threading;
 struct Time_and_String
 {
     public int Num;
     public double Time;
     public String Content;
+    public String Color;
 }
 
 namespace WindowsFormsApplication1
@@ -53,23 +55,26 @@ namespace WindowsFormsApplication1
         static Form2 F2 = new Form2();
         public String FontNow = F2.FontNow;
         public int SizeNow = F2.SizeNow;
+
         public static string GetUrltoHtml(string Url, string type)
         {
             try
             {
                 System.Net.WebRequest wReq = System.Net.WebRequest.Create(Url);
-                wReq.Timeout = 10000;
+                wReq.Timeout = 4000;
                 System.Net.WebResponse wResp = wReq.GetResponse();
                 System.IO.Stream respStream = wResp.GetResponseStream();
                 // Dim reader As StreamReader = New StreamReader(respStream)
-                
+                String st2 = "";
                 using (System.IO.StreamReader reader = new System.IO.StreamReader(respStream, Encoding.GetEncoding(type)))
                 {
-                    
-                    String st2 =  reader.ReadToEnd();
-                    wReq.Abort();
-                    return st2;
+                    st2 = reader.ReadToEnd().ToString(); 
                 }
+                
+                respStream.Dispose();
+                wResp.Close();
+                wReq.Abort();
+                return st2;
             }
             catch (System.Exception ex)
             {
@@ -104,6 +109,7 @@ namespace WindowsFormsApplication1
                 Temp.Num = int.Parse(item.Key);
                 Temp.Time = double.Parse(Con["Time"].ToString());
                 Temp.Content = Con["Content"].ToString();
+                Temp.Color = Con["Color"].ToString();
                 Content.Add(Temp);
             }
             F2.LogOut("网络正常"+((Content.Count != 0)?(" 服务器中弹幕数 : "+Content.Count.ToString()):("")));
@@ -133,7 +139,12 @@ namespace WindowsFormsApplication1
                     Temp.Font = new System.Drawing.Font(F2.FontNow, (float)F2.SizeNow, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
                     Temp.Location = new System.Drawing.Point(ScreenArea.Width + (int)((con.Time-Time_min)*10), 35);
                     Temp.Name = "label1";
-                    Temp.ForeColor = Color.FromArgb(255, 255, 255);
+                    Temp.ForeColor = Color.FromArgb
+                        (
+                        System.Convert.ToInt32(con.Color.Substring(0, 2),16),
+                        System.Convert.ToInt32(con.Color.Substring(2, 2), 16),
+                        System.Convert.ToInt32(con.Color.Substring(4, 2), 16)
+                        );
                     Temp.TabIndex = con.Num + 1;
                     Temp.Text = con.Content;
                     Temp.Visible = true;
@@ -188,7 +199,10 @@ namespace WindowsFormsApplication1
         }
         void StopRef(object sender, EventArgs e)
         {
-            Timers_Timer2.Enabled = false;
+            //Timers_Timer2.Dispose();
+            //F2.LogOut("Start Stopping");
+            Timers_Timer2.Stop();
+            
         }
         void StaRef(object sender, EventArgs e)
         {
@@ -221,7 +235,7 @@ namespace WindowsFormsApplication1
             Timers_Timer.Interval = 20;
             Timers_Timer.Enabled = true;
             Timers_Timer.Elapsed += new System.Timers.ElapsedEventHandler(Screen_Refersh);
-            Timers_Timer2.Interval = 2000;
+            Timers_Timer2.Interval = 3000;
             Timers_Timer2.Enabled = true;
             Timers_Timer2.Elapsed += new System.Timers.ElapsedEventHandler(Content_Refersh);
             ScreenArea = System.Windows.Forms.Screen.GetWorkingArea(this);

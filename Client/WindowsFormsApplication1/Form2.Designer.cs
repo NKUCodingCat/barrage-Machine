@@ -68,10 +68,10 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 352);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(533, 12);
+            this.label1.Size = new System.Drawing.Size(527, 12);
             this.label1.TabIndex = 2;
-            this.label1.Text = "----Designed and Made By NKUCodingCat In TIC-------Ver 0.9.0.2-------------------" +
-    "-------";
+            this.label1.Text = "----Designed and Made By NKUCodingCat In TIC-------Ver 0.9.3.0 - Beta -----------" +
+    "------";
             // 
             // comboBox1
             // 
@@ -137,6 +137,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label5.Location = new System.Drawing.Point(6, 15);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(125, 12);
