@@ -44,6 +44,7 @@ def tojson():
     T = time.time()
     L = Li[:]
     Li = [i for i in L if (abs(i[1] - T) < 60)]
+    kv.set("DM",Li)
     #清除已经过期的数据
     Di = {}
     List = []
