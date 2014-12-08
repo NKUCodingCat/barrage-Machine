@@ -62,19 +62,53 @@
       <PostinstrumentEvent>
         <InstrEventExclude>false</InstrEventExclude>
       </PostinstrumentEvent>
-      <ProjRef>{F118427F-C9D5-4DF5-A924-26CEF7ECB70C}|WindowsFormsApplication1\WindowsFormsApplication1.csproj</ProjRef>
-      <ProjPath>WindowsFormsApplication1\WindowsFormsApplication1.csproj</ProjPath>
-      <ProjName>WindowsFormsApplication1</ProjName>
+      <ProjRef>{F118427F-C9D5-4DF5-A924-26CEF7ECB70C}|WindowsFormsApplication1\DM-Fork.csproj</ProjRef>
+      <ProjPath>WindowsFormsApplication1\DM-Fork.csproj</ProjPath>
+      <ProjName>DM-Fork</ProjName>
+    </ProjBinary>
+    <ProjBinary>
+      <Path>WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe</Path>
+      <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
+      <Instrument>true</Instrument>
+      <Sample>true</Sample>
+      <ExternalWebsite>false</ExternalWebsite>
+      <InteractionProfilingEnabled>false</InteractionProfilingEnabled>
+      <IsLocalJavascript>false</IsLocalJavascript>
+      <IsWindowsStoreApp>false</IsWindowsStoreApp>
+      <IsWWA>false</IsWWA>
+      <LaunchProject>true</LaunchProject>
+      <OverrideProjectSettings>false</OverrideProjectSettings>
+      <LaunchMethod>Executable</LaunchMethod>
+      <ExecutablePath>WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe</ExecutablePath>
+      <StartupDirectory>WindowsFormsApplication1\bin\Debug\</StartupDirectory>
+      <Arguments>
+      </Arguments>
+      <NetAppHost>IIS</NetAppHost>
+      <NetBrowser>InternetExplorer</NetBrowser>
+      <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
+      <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
+      <PreinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PreinstrumentEvent>
+      <PostinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PostinstrumentEvent>
+      <ProjRef>{F118427F-C9D5-4DF5-A924-26CEF7ECB70C}|WindowsFormsApplication1\DM-Fork.csproj</ProjRef>
+      <ProjPath>WindowsFormsApplication1\DM-Fork.csproj</ProjPath>
+      <ProjName>DM-Fork</ProjName>
     </ProjBinary>
   </Binaries>
   <Reports>
     <Report>
       <Path>WindowsFormsApplication1141204.vsp</Path>
     </Report>
+    <Report>
+      <Path>WindowsFormsApplication1141208.vsp</Path>
+    </Report>
   </Reports>
   <Launches>
     <ProjBinary>
-      <Path>:PB:{F118427F-C9D5-4DF5-A924-26CEF7ECB70C}|WindowsFormsApplication1\WindowsFormsApplication1.csproj</Path>
+      <Path>:PB:{F118427F-C9D5-4DF5-A924-26CEF7ECB70C}|WindowsFormsApplication1\DM-Fork.csproj</Path>
     </ProjBinary>
   </Launches>
 </VSPerformanceSession>

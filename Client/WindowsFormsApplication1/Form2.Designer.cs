@@ -71,7 +71,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(527, 12);
             this.label1.TabIndex = 2;
-            this.label1.Text = "----Designed and Made By NKUCodingCat In TIC------------Ver 0.9.3.1 - Beta ------" +
+            this.label1.Text = "----Designed and Made By NKUCodingCat In TIC------------Ver 0.9.4.0 - Beta ------" +
     "------";
             // 
             // comboBox1

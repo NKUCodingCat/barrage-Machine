@@ -64,7 +64,18 @@ namespace WindowsFormsApplication1
                 System.Net.WebRequest wReq = System.Net.WebRequest.Create(Url);
                 wReq.Timeout = 4000;
                 wReq.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-                System.Net.WebResponse wResp = wReq.GetResponse();
+                System.Net.WebResponse wResp;
+                if (Monitor.TryEnter(Req, 4000))
+                {
+                    wResp = wReq.GetResponse();
+                    Monitor.Exit(Req);
+                }
+                else
+                {
+                    F2.LogOut("响应较慢，网络拥堵/服务器过载？ ");
+                    F2.LogOut("若该现象持续，尝试停止弹幕或者重启弹幕姬");
+                    return "{}";
+                }
                 System.IO.Stream respStream = wResp.GetResponseStream();
                 // Dim reader As StreamReader = New StreamReader(respStream)
                 String st2 = "";
