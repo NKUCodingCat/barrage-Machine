@@ -137,13 +137,23 @@ namespace WindowsFormsApplication1
                     LogOut(ex.ToString());
                     LogOut("连接不成功，请重新输入");
                     textBox1.Text = Url;
-                    if (StaRef != null) StaRef(this, new EventArgs());
+                    if (StaRef != null)
+                    {
+                        StaRef(this, new EventArgs());
+                        button4.Text = "关闭弹幕"; 
+                        isOpen = true;
+                    }
                     return;
                 }
                 LogOut("连接成功，服务器地址已经改为" + textBox1.Text);
                 Url = textBox1.Text;
                 WriteConfig("Url", textBox1.Text);
-                if (StaRef != null) StaRef(this, new EventArgs());
+                if (StaRef != null)
+                {
+                    StaRef(this, new EventArgs());
+                    button4.Text = "关闭弹幕";
+                    isOpen = true;
+                }
                 return;
             }
             else return;
