@@ -12,6 +12,7 @@ using System.Collections;
 using System.IO;
 using System.Web.Script.Serialization;
 using System.Threading;
+using System.Net.Cache;
 struct Time_and_String
 {
     public int Num;
@@ -55,13 +56,14 @@ namespace WindowsFormsApplication1
         static Form2 F2 = new Form2();
         public String FontNow = F2.FontNow;
         public int SizeNow = F2.SizeNow;
-
+        static object Req = new object();
         public static string GetUrltoHtml(string Url, string type)
         {
             try
             {
                 System.Net.WebRequest wReq = System.Net.WebRequest.Create(Url);
                 wReq.Timeout = 4000;
+                wReq.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
                 System.Net.WebResponse wResp = wReq.GetResponse();
                 System.IO.Stream respStream = wResp.GetResponseStream();
                 // Dim reader As StreamReader = New StreamReader(respStream)
@@ -165,12 +167,15 @@ namespace WindowsFormsApplication1
         void Clr(Control c)
         {
             Label Now = (Label)c;
-            for (int j = 0; j < Screen.Count; j++)
+            lock (Screen)
             {
-                Label Prev = (Label)Screen[j];
-                if ((((Now.Location.X < Prev.Location.X + Prev.Width) && (Now.Location.X > Prev.Location.X)) || ((Now.Location.X + Now.Width < Prev.Location.X + Prev.Width) && (Now.Location.X + Now.Width > Prev.Location.X))) && (Prev.Location.Y == Now.Location.Y))
+                for (int j = 0; j < Screen.Count; j++)
                 {
-                    Now.Location = new System.Drawing.Point(Now.Location.X, Now.Location.Y + Prev.Height + 5);
+                    Label Prev = (Label)Screen[j];
+                    if ((((Now.Location.X < Prev.Location.X + Prev.Width) && (Now.Location.X > Prev.Location.X)) || ((Now.Location.X + Now.Width < Prev.Location.X + Prev.Width) && (Now.Location.X + Now.Width > Prev.Location.X))) && (Prev.Location.Y == Now.Location.Y))
+                    {
+                        Now.Location = new System.Drawing.Point(Now.Location.X, Now.Location.Y + Prev.Height + 5);
+                    }
                 }
             }
         }
@@ -199,10 +204,8 @@ namespace WindowsFormsApplication1
         }
         void StopRef(object sender, EventArgs e)
         {
-            //Timers_Timer2.Dispose();
-            //F2.LogOut("Start Stopping");
             Timers_Timer2.Stop();
-            
+            F2.LogOut("Stopped");
         }
         void StaRef(object sender, EventArgs e)
         {
@@ -235,7 +238,7 @@ namespace WindowsFormsApplication1
             Timers_Timer.Interval = 20;
             Timers_Timer.Enabled = true;
             Timers_Timer.Elapsed += new System.Timers.ElapsedEventHandler(Screen_Refersh);
-            Timers_Timer2.Interval = 3000;
+            Timers_Timer2.Interval = 2000;
             Timers_Timer2.Enabled = true;
             Timers_Timer2.Elapsed += new System.Timers.ElapsedEventHandler(Content_Refersh);
             ScreenArea = System.Windows.Forms.Screen.GetWorkingArea(this);
