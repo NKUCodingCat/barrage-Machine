@@ -1,6 +1,6 @@
 #-*- coding=utf-8 -*-
 # [0]数据编号<int> [1]创建时间<float> [2]内容<string> [3]颜色<string(Syntax：[0-9a-fA-F]{6})>
-import json
+import json,colorpro
 import time
 import re
 import random
@@ -10,7 +10,7 @@ kv = sae.kvdb.KVClient()
 clo = re.compile("\A[0-9A-Fa-f]{6}[Dd]")
 sta = re.compile("\A[Dd][Mm]")
 mid = re.compile("[\t\r\n\f\v]")
-def Click(Text):
+def Click(usr,Text):
     Li = kv.get("DM")
     Now = kv.get("DM-Max")
     if not Li:
@@ -27,7 +27,7 @@ def Click(Text):
         Color = Text[0:6].upper();
         Text = Text[6:]
     else:
-        Color = "FFFFFF"
+        Color = colorpro.GetColor(str(usr))
         Text = Text[:]
     Text = sta.sub("",Text)
     Text = mid.sub(" ",Text)

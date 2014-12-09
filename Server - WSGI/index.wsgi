@@ -1,4 +1,4 @@
-import kvpo
+import kvpo,colorpro
 import sae
 import urlparse
 import xml.etree.ElementTree as ET
@@ -24,7 +24,28 @@ def app(environ, start_response):
             <FromUserName>'''+toUser+'''</FromUserName>
             <CreateTime>'''+CreateTime+'''</CreateTime>
             <MsgType><![CDATA[text]]></MsgType>
-            <Content><![CDATA[''' + kvpo.Click(Text) + ''']]></Content>
+            <Content><![CDATA[''' + kvpo.Click(fromUser,Text) + ''']]></Content>
+            </xml>'''
+            return texttpl
+    if environ ["PATH_INFO"]  == "/color":
+        method=environ['REQUEST_METHOD']
+        if method=="GET":
+            query=environ['QUERY_STRING']
+            echostr=urlparse.parse_qs(query)['echostr']
+            return echostr
+        elif method=="POST":
+            post=environ['wsgi.input']        
+            root = ET.parse(post)
+            fromUser=root.findtext(".//FromUserName")
+            toUser=root.findtext(".//ToUserName")
+            CreateTime=root.findtext(".//CreateTime")
+            Text=root.findtext(".//Content")
+            texttpl='''<xml>
+            <ToUserName>'''+fromUser+'''</ToUserName>
+            <FromUserName>'''+toUser+'''</FromUserName>
+            <CreateTime>'''+CreateTime+'''</CreateTime>
+            <MsgType><![CDATA[text]]></MsgType>
+            <Content><![CDATA[''' + colorpro.SetColor(fromUser,Text) + ''']]></Content>
             </xml>'''
             return texttpl
     if environ ["PATH_INFO"]  == "/tojson":
