@@ -1,60 +1,106 @@
-#-*- coding=utf-8 -*-
-# [0]数据编号<int> [1]创建时间<float> [2]内容<string> [3]颜色<string(Syntax：[0-9a-fA-F]{6})>
-import json,colorpro
-import time
-import re
-import random
-import sae.kvdb
-import copy
-kv = sae.kvdb.KVClient()
-clo = re.compile("\A[0-9A-Fa-f]{6}[Dd]")
-sta = re.compile("\A[Dd][Mm]")
-mid = re.compile("[\t\r\n\f\v]")
-def Click(usr,Text):
-    Li = kv.get("DM")
-    Now = kv.get("DM-Max")
-    if not Li:
-        Li = []
-        kv.set("DM",[])
-    if not Now:
-        Now = 0
-        kv.set("DM",0)
-    #读取数据库数据
-    T = time.time()
-    No = Now+1;
-    Arr = clo.findall(Text)
-    if Arr != []:
-        Color = Text[0:6].upper();
-        Text = Text[6:]
+# -*- coding=utf-8 -*-
+import kvpo,colorpro,re,Img
+import sae
+import urlparse
+import xml.etree.ElementTree as ET
+C = re.compile("\A/[0-9a-fA-F]{6}\.jpg\Z")
+def app(environ, start_response):
+    status = '200 OK'
+    if environ ["PATH_INFO"]  == "/dm":
+        response_headers = [('Content-type', 'text/html; charset=utf-8')]
+        start_response(status, response_headers)
+        method=environ['REQUEST_METHOD']
+        if method=="GET":
+            query=environ['QUERY_STRING']
+            echostr=urlparse.parse_qs(query)['echostr']
+            return echostr
+        elif method=="POST":
+            post=environ['wsgi.input']        
+            root = ET.parse(post)
+            fromUser=root.findtext(".//FromUserName")
+            toUser=root.findtext(".//ToUserName")
+            CreateTime=root.findtext(".//CreateTime")
+            Text=root.findtext(".//Content")
+            texttpl='''<xml>
+            <ToUserName>'''+fromUser+'''</ToUserName>
+            <FromUserName>'''+toUser+'''</FromUserName>
+            <CreateTime>'''+CreateTime+'''</CreateTime>
+            <MsgType><![CDATA[text]]></MsgType>
+            <Content><![CDATA[''' + kvpo.Click(fromUser,Text) + ''']]></Content>
+            </xml>'''
+            return texttpl
+    if environ ["PATH_INFO"]  == "/color":
+        response_headers = [('Content-type', 'text/html; charset=utf-8')]
+        start_response(status, response_headers)
+        method=environ['REQUEST_METHOD']
+        if method=="GET":
+            query=environ['QUERY_STRING']
+            echostr=urlparse.parse_qs(query)['echostr']
+            return echostr
+        elif method=="POST":
+            post=environ['wsgi.input']        
+            root = ET.parse(post)
+            fromUser=root.findtext(".//FromUserName")
+            toUser=root.findtext(".//ToUserName")
+            CreateTime=root.findtext(".//CreateTime")
+            Text=root.findtext(".//Content")
+            texttpl= """<xml>
+            <ToUserName><![CDATA["""+fromUser+"""]]></ToUserName>
+            <FromUserName><![CDATA["""+toUser+"""]]></FromUserName>
+            <CreateTime>"""+CreateTime+"""</CreateTime>
+            <MsgType><![CDATA[news]]></MsgType>
+            <ArticleCount>1</ArticleCount>
+            <Articles>
+            <item>
+            <Title><![CDATA[默认弹幕颜色修改成功~]]></Title> 
+            <Description><![CDATA["""+colorpro.SetColor(fromUser,Text)+"""\n图片的背景颜色才是你的弹幕颜色啊喂！]]></Description>
+            <PicUrl><![CDATA[http://302.nktwclick.sinaapp.com/"""+Text[-6:].upper()+""".jpg]]></PicUrl>
+            <Url><![CDATA[http://302.nktwclick.sinaapp.com/"""+Text[-6:].upper()+""".jpg]]></Url>
+            </item>
+            </Articles>
+            </xml> """
+            return texttpl
+    if environ ["PATH_INFO"]  == "/check":
+        response_headers = [('Content-type', 'text/html; charset=utf-8')]
+        start_response(status, response_headers)
+        method=environ['REQUEST_METHOD']
+        if method=="GET":
+            query=environ['QUERY_STRING']
+            echostr=urlparse.parse_qs(query)['echostr']
+            return echostr
+        elif method=="POST":
+            post=environ['wsgi.input']        
+            root = ET.parse(post)
+            fromUser=root.findtext(".//FromUserName")
+            toUser=root.findtext(".//ToUserName")
+            CreateTime=root.findtext(".//CreateTime")
+            Text=root.findtext(".//Content")
+            texttpl= """<xml>
+            <ToUserName><![CDATA["""+fromUser+"""]]></ToUserName>
+            <FromUserName><![CDATA["""+toUser+"""]]></FromUserName>
+            <CreateTime>"""+CreateTime+"""</CreateTime>
+            <MsgType><![CDATA[news]]></MsgType>
+            <ArticleCount>1</ArticleCount>
+            <Articles>
+            <item>
+            <Title><![CDATA[默认弹幕颜色~]]></Title> 
+            <Description><![CDATA[默认弹幕颜色为"""+str(colorpro.GetColor(fromUser))+"""\n图片的背景颜色才是你的弹幕颜色啊喂！]]></Description>
+            <PicUrl><![CDATA[http://302.nktwclick.sinaapp.com/"""+str(colorpro.GetColor(fromUser))+""".jpg]]></PicUrl>
+            <Url><![CDATA[http://302.nktwclick.sinaapp.com/"""+str(colorpro.GetColor(fromUser))+""".jpg]]></Url>
+            </item>
+            </Articles>
+            </xml> """
+            return texttpl
+    if environ ["PATH_INFO"]  == "/tojson":
+        response_headers = [('Content-type', 'text/html; charset=utf-8')]
+        start_response(status, response_headers)
+        return kvpo.tojson()
+    if C.findall(environ ["PATH_INFO"]) != []:
+        response_headers = [('Content-type', ' image/jpeg')]
+        start_response(status, response_headers)
+        return Img.toImg(environ ["PATH_INFO"][1:7])
     else:
-        Color = colorpro.GetColor(str(usr))
-        Text = Text[:]
-    Text = sta.sub("",Text)
-    Text = mid.sub(" ",Text)
-    Li.append([No,T,Text,Color])
-    kv.set("DM",Li)
-    kv.set("DM-Max",Now+1)
-    return "弹幕已发送~"
-def tojson():
-    Li = kv.get("DM")
-    if not Li:
-        Li = [ ]
-        kv.set("DM",[])
-    #读取数据库数据
-    T = time.time()
-    L = Li[:]
-    Li = [i for i in L if (abs(i[1] - T) < 60)]
-    kv.set("DM",Li)
-    #清除已经过期的数据
-    Di = {}
-    List = []
-    """
-    for j in Li:
-        Di["Num"] = j[0]
-        Di["Time"] = j[1]
-        Di["Content"] = j[2]
-        List.append(copy.deepcopy(Di))
-    """
-    for j in Li:
-        Di[j[0]] = {"Time":j[1],"Content":j[2],"Color":j[3]}
-    return json.dumps(Di)
+        response_headers = [('Content-type', 'text/html; charset=utf-8')]
+        start_response(status, response_headers)
+        return "Who's your Daddy"
+application = sae.create_wsgi_app(app)

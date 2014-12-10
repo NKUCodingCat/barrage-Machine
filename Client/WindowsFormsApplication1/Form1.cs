@@ -81,9 +81,8 @@ namespace WindowsFormsApplication1
                 String st2 = "";
                 using (System.IO.StreamReader reader = new System.IO.StreamReader(respStream, Encoding.GetEncoding(type)))
                 {
-                    st2 = reader.ReadToEnd().ToString(); 
+                    st2 = reader.ReadToEnd().ToString();
                 }
-                
                 respStream.Dispose();
                 wResp.Close();
                 wReq.Abort();
@@ -91,7 +90,7 @@ namespace WindowsFormsApplication1
             }
             catch (System.Exception ex)
             {
-                F2.LogOut("网络异常"+ex.ToString());
+                F2.LogOut("网络异常" + ex.ToString());
                 F2.LogOut(Url);
                 return "";
             }
@@ -107,12 +106,12 @@ namespace WindowsFormsApplication1
             {
                 F2.LogOut("服务器返回数据不符合所需JSON标准，请检查");
                 //throw new Exception(ex.Message);
-                return new Dictionary<string, object> ();
+                return new Dictionary<string, object>();
             }
         }
         public static ArrayList Content_Make()
         {
-            String JsonText = GetUrltoHtml("http://"+F2.Url, "utf-8");
+            String JsonText = GetUrltoHtml("http://" + F2.Url, "utf-8");
             Dictionary<string, object> dic = JsonToDictionary(JsonText);
             ArrayList Content = new ArrayList();
             foreach (KeyValuePair<string, object> item in dic)
@@ -125,13 +124,11 @@ namespace WindowsFormsApplication1
                 Temp.Color = Con["Color"].ToString();
                 Content.Add(Temp);
             }
-            F2.LogOut("网络正常"+((Content.Count != 0)?(" 服务器中弹幕数 : "+Content.Count.ToString()):("")));
+            F2.LogOut("网络正常" + ((Content.Count != 0) ? (" 服务器中弹幕数 : " + Content.Count.ToString()) : ("")));
             return Content;
         }
         void Content_Refersh(object sender, System.Timers.ElapsedEventArgs e)
         {
-            
-            //ArrayList Scr_Temp = new ArrayList();
             double Max = double.MinValue;
             double Time_min = double.MaxValue;
             ArrayList Content = Content_Make();
@@ -150,11 +147,11 @@ namespace WindowsFormsApplication1
                     Label Temp = new Label();
                     Temp.AutoSize = true;
                     Temp.Font = new System.Drawing.Font(F2.FontNow, (float)F2.SizeNow, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                    Temp.Location = new System.Drawing.Point(ScreenArea.Width + (int)((con.Time-Time_min)*10), 35);
+                    Temp.Location = new System.Drawing.Point(ScreenArea.Width + (int)((con.Time - Time_min) * 10), 35);
                     Temp.Name = "label1";
                     Temp.ForeColor = Color.FromArgb
                         (
-                        System.Convert.ToInt32(con.Color.Substring(0, 2),16),
+                        System.Convert.ToInt32(con.Color.Substring(0, 2), 16),
                         System.Convert.ToInt32(con.Color.Substring(2, 2), 16),
                         System.Convert.ToInt32(con.Color.Substring(4, 2), 16)
                         );
@@ -178,17 +175,20 @@ namespace WindowsFormsApplication1
         void Clr(Control c)
         {
             Label Now = (Label)c;
-            lock (Screen)
+            int i = 0;
+            while (!Monitor.TryEnter(Screen))
             {
-                for (int j = 0; j < Screen.Count; j++)
+                i++;
+            }
+            for (int j = 0; j < Screen.Count; j++)
+            {
+                Label Prev = (Label)Screen[j];
+                if ((((Now.Location.X < Prev.Location.X + Prev.Width) && (Now.Location.X > Prev.Location.X)) || ((Now.Location.X + Now.Width < Prev.Location.X + Prev.Width) && (Now.Location.X + Now.Width > Prev.Location.X))) && (Prev.Location.Y == Now.Location.Y))
                 {
-                    Label Prev = (Label)Screen[j];
-                    if ((((Now.Location.X < Prev.Location.X + Prev.Width) && (Now.Location.X > Prev.Location.X)) || ((Now.Location.X + Now.Width < Prev.Location.X + Prev.Width) && (Now.Location.X + Now.Width > Prev.Location.X))) && (Prev.Location.Y == Now.Location.Y))
-                    {
-                        Now.Location = new System.Drawing.Point(Now.Location.X, Now.Location.Y + Prev.Height + 5);
-                    }
+                    Now.Location = new System.Drawing.Point(Now.Location.X, Now.Location.Y + Prev.Height + 5);
                 }
             }
+            Monitor.Exit(Screen);
         }
         void Screen_Refersh(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -255,7 +255,7 @@ namespace WindowsFormsApplication1
             ScreenArea = System.Windows.Forms.Screen.GetWorkingArea(this);
             F2.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
-            F2.StopRef+= new EventHandler(StopRef);
+            F2.StopRef += new EventHandler(StopRef);
             F2.StaRef += new EventHandler(StaRef);
         }
     }
