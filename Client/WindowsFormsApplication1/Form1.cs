@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -119,7 +120,7 @@ namespace WindowsFormsApplication1
                 Time_and_String Temp = new Time_and_String();
                 Dictionary<string, object> Con = (Dictionary<string, object>)item.Value;
                 Temp.Num = int.Parse(item.Key);
-                Temp.Time = double.Parse(Con["Time"].ToString());
+                Temp.Time = double.Parse(Regex.Replace(Con["Time"].ToString(),"\"",""));
                 Temp.Content = Con["Content"].ToString();
                 Temp.Color = Con["Color"].ToString();
                 Content.Add(Temp);
