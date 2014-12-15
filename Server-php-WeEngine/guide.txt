@@ -1,2 +1,2 @@
 微擎根目录 \source\modules\userapi\api\dm.php
-dmser直接丢在根目录
+dmser和\img直接丢在微擎根目录

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 function microtime_float()
 {
    list($usec, $sec) = explode(" ", microtime());
@@ -41,19 +41,27 @@ else
 {
 	if (eregi("^[Cc][Oo][Ll][Oo][Uu]?[Rr]",$content))
 	{
+		$bind = array();
 		//查询
 		if (eregi("^[Cc][Oo][Ll][Oo][Uu]?[Rr][ \n\t\r\f\v]{0,}$",$content))
 		{
+			$bind['title'] = "默认颜色";
 			$sql = "SELECT * FROM dm_color WHERE usr = '".$this->message['from']."'";
 			$res = pdo_fetchall($sql);
 			if ( !empty($res[0]['color']) )
 			{
-				return $this->respText("颜色为#".$res[0]['color']);
+				$bind['description']  = "你的默认颜色为#".$res[0]['color'];
+				$bind['url'] = "http://".$_SERVER ['HTTP_HOST'].dirname($_SERVER['PHP_SELF'])."/img/img.php?color=".$res[0]['color'];
+				$bind['picurl'] = $bind['url'];
 			}
 			else
 			{
-				return $this->respText("颜色为#FFFFFF");
+				$bind['url'] = "http://".$_SERVER ['HTTP_HOST'].dirname($_SERVER['PHP_SELF'])."/img/img.php?color=FFFFFF";
+				$bind['picurl'] = $bind['url'];
+				$bind['description']  = "你的默认颜色为#FFFFFF";
 			}
+			return $this->respNews($bind);
+			
 		}
 		//修改
 		elseif (eregi("^[Cc][Oo][Ll][Oo][Uu]?[Rr][ \n\t\r\f\v]{0,}[a-fA-F0-9]{6}[ \n\t\r\f\v]{0,}$",$content))
@@ -70,7 +78,11 @@ else
 				$sql = "UPDATE dm_color SET color = '".strtoupper((String)$match[0][0])."' WHERE usr = '".$this->message['from']."'";
 			}
 			pdo_query($sql);
-		    return $this->respText("修改成功~现在的默认颜色为#".strtoupper((String)$match[0][0]));
+			$bind['title'] = "颜色修改成功";
+		    $bind['description'] = "修改成功~现在的默认颜色为#".strtoupper((String)$match[0][0]);
+			$bind['url'] = "http://".$_SERVER ['HTTP_HOST'].dirname($_SERVER['PHP_SELF'])."/img/img.php?color=".strtoupper((String)$match[0][0]);
+			$bind['picurl'] = $bind['url'];
+			return $this->respNews($bind);
 		}
 		else
 		{
